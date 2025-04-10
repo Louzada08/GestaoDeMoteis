@@ -1,0 +1,6 @@
+@GestaoMotel.API_HostAddress = http://localhost:5157
+
+GET {{GestaoMotel.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
