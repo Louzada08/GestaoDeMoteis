@@ -3,9 +3,44 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.13.35806.99 d17.13
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "API", "API", "{9E10740C-4BF3-4781-8E8C-5FBDA671653A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Aplicacao", "Aplicacao", "{138C02BA-CCC5-4322-9BBE-7E48389D79BF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Dominio", "Dominio", "{297B4297-C5B6-4B4B-B695-0260C0B6F952}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infraestrutura", "Infraestrutura", "{C5B5BEF6-BB3D-477D-AE18-EF886241CB82}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "InterfaceAdaptador", "InterfaceAdaptador", "{BC3101B0-390C-419F-9F20-DA8C0C8F6077}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Mapeamento", "Mapeamento", "{356C4C29-79B3-4133-83B4-1E91DB2717B1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GestaoMotel.API", "GestaoMotel.API\GestaoMotel.API.csproj", "{87346F6F-A649-43BC-82D9-4C5F3FEC0268}"
+EndProject
 Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{87346F6F-A649-43BC-82D9-4C5F3FEC0268}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{87346F6F-A649-43BC-82D9-4C5F3FEC0268}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{87346F6F-A649-43BC-82D9-4C5F3FEC0268}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{87346F6F-A649-43BC-82D9-4C5F3FEC0268}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{9E10740C-4BF3-4781-8E8C-5FBDA671653A} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{138C02BA-CCC5-4322-9BBE-7E48389D79BF} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{297B4297-C5B6-4B4B-B695-0260C0B6F952} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{C5B5BEF6-BB3D-477D-AE18-EF886241CB82} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{BC3101B0-390C-419F-9F20-DA8C0C8F6077} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{356C4C29-79B3-4133-83B4-1E91DB2717B1} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{87346F6F-A649-43BC-82D9-4C5F3FEC0268} = {9E10740C-4BF3-4781-8E8C-5FBDA671653A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {04AB1568-57D6-4D8A-A210-866FC4A90FD2}
