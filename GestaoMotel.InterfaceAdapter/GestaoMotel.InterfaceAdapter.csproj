@@ -6,4 +6,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\GestaoMotel.Aplicacao\GestaoMotel.Application.csproj" />
+    <ProjectReference Include="..\GestaoMotel.Dominio\GestaoMotel.Domain.csproj" />
+  </ItemGroup>
+
 </Project>
