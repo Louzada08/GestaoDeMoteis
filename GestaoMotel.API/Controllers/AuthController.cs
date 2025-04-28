@@ -1,7 +1,7 @@
-﻿using GestaoMotel.API.Controllers.Main;
+﻿using AutoMapper;
+using GestaoMotel.API.Controllers.Main;
 using GestaoMotel.Application.Services;
 using GestaoMotel.Domain.Dtos;
-using GestaoMotel.Domain.Entities;
 using GestaoMotel.Domain.Entities.Identity;
 using GestaoMotel.InterfaceAdapter.ViewModels;
 using MediatR;
@@ -9,10 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Text;
 
 namespace GestaoMotel.API.Controllers;
 
@@ -29,7 +26,7 @@ public class AuthController : MainController
     public AuthController(SignInManager<IdentityUser> signInManager, 
                           UserManager<IdentityUser> userManager, ITokenService tokenService, 
                           IOptions<AppSettings> appSettings,
-                          IMediator mediator) : base(mediator)
+                          IMediator mediator, IMapper mapper) : base(mediator, mapper)
     {
         _signInManager = signInManager;
         _userManager = userManager;

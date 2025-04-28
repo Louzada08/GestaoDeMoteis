@@ -22,6 +22,190 @@ namespace GestaoMotel.Infra.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("GestaoMotel.Domain.Entities.Category", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Acronym")
+                        .IsRequired()
+                        .HasMaxLength(5)
+                        .HasColumnType("varchar");
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Category", (string)null);
+                });
+
+            modelBuilder.Entity("GestaoMotel.Domain.Entities.PriceTable", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("CategoryId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<TimeOnly>("PeriodEndTimes")
+                        .HasColumnType("time");
+
+                    b.Property<TimeOnly>("PeriodStartTimes")
+                        .HasColumnType("time");
+
+                    b.Property<TimeOnly>("ToleranceTime")
+                        .HasColumnType("time");
+
+                    b.Property<int>("TypePrice")
+                        .HasColumnType("int")
+                        .HasColumnName("TypePrice");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.ToTable("PriceTable", (string)null);
+                });
+
+            modelBuilder.Entity("GestaoMotel.Domain.Entities.PriceTableTime", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("PriceTableId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int?>("RuleOrder")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PriceTableId");
+
+                    b.ToTable("PriceTableTime", (string)null);
+                });
+
+            modelBuilder.Entity("GestaoMotel.Domain.Entities.ServiceCommand", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("CleaningUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("ClosingDateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("OpeningDateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("SuiteId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("UserInspectionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CleaningUserId")
+                        .IsUnique()
+                        .HasFilter("[CleaningUserId] IS NOT NULL");
+
+                    b.HasIndex("SuiteId")
+                        .IsUnique()
+                        .HasFilter("[SuiteId] IS NOT NULL");
+
+                    b.HasIndex("UserId")
+                        .IsUnique()
+                        .HasFilter("[UserId] IS NOT NULL");
+
+                    b.HasIndex("UserInspectionId")
+                        .IsUnique()
+                        .HasFilter("[UserInspectionId] IS NOT NULL");
+
+                    b.ToTable("ServiceCommand", (string)null);
+                });
+
+            modelBuilder.Entity("GestaoMotel.Domain.Entities.Suite", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("CategoryId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("DownloadedFrom")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Number")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StateSuite")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.ToTable("Suite", (string)null);
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
@@ -220,6 +404,162 @@ namespace GestaoMotel.Infra.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("GestaoMotel.Domain.Entities.PriceTable", b =>
+                {
+                    b.OwnsOne("GestaoMotel.Domain.ValueObjects.PromotionPeriod", "PromotionPeriod", b1 =>
+                        {
+                            b1.Property<Guid>("PriceTableId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<bool>("Active")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("bit")
+                                .HasDefaultValue(false)
+                                .HasColumnName("Active");
+
+                            b1.Property<DateTime?>("FinalPromotionPeriod")
+                                .HasColumnType("datetime2")
+                                .HasColumnName("FinalPromotionPeriod");
+
+                            b1.Property<DateTime?>("InitialPromotionPeriod")
+                                .HasColumnType("datetime2")
+                                .HasColumnName("InitialPromotionPeriod");
+
+                            b1.HasKey("PriceTableId");
+
+                            b1.ToTable("PriceTable");
+
+                            b1.WithOwner()
+                                .HasForeignKey("PriceTableId");
+                        });
+
+                    b.OwnsOne("GestaoMotel.Domain.ValueObjects.WeekDay", "WeekDay", b1 =>
+                        {
+                            b1.Property<Guid>("PriceTableId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<bool>("HasFriday")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("bit")
+                                .HasDefaultValue(false)
+                                .HasColumnName("HasFriday");
+
+                            b1.Property<bool>("HasMonday")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("bit")
+                                .HasDefaultValue(false)
+                                .HasColumnName("HasMonday");
+
+                            b1.Property<bool>("HasSaturday")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("bit")
+                                .HasDefaultValue(false)
+                                .HasColumnName("HasSaturday");
+
+                            b1.Property<bool>("HasSunday")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("bit")
+                                .HasDefaultValue(false)
+                                .HasColumnName("HasSunday");
+
+                            b1.Property<bool>("HasThursday")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("bit")
+                                .HasDefaultValue(false)
+                                .HasColumnName("HasThursday");
+
+                            b1.Property<bool>("HasTuesday")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("bit")
+                                .HasDefaultValue(false)
+                                .HasColumnName("HasTuesday");
+
+                            b1.Property<bool>("HasWednesday")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("bit")
+                                .HasDefaultValue(false)
+                                .HasColumnName("HasWednesday");
+
+                            b1.HasKey("PriceTableId");
+
+                            b1.ToTable("PriceTable");
+
+                            b1.WithOwner()
+                                .HasForeignKey("PriceTableId");
+                        });
+
+                    b.Navigation("PromotionPeriod");
+
+                    b.Navigation("WeekDay");
+                });
+
+            modelBuilder.Entity("GestaoMotel.Domain.Entities.PriceTableTime", b =>
+                {
+                    b.HasOne("GestaoMotel.Domain.Entities.PriceTable", "PriceTable")
+                        .WithMany("PriceTableTimes")
+                        .HasForeignKey("PriceTableId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.OwnsOne("GestaoMotel.Domain.ValueObjects.Prices", "Price", b1 =>
+                        {
+                            b1.Property<Guid>("PriceTableTimeId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<decimal>("DiscountPrice")
+                                .HasColumnType("decimal(6,2)")
+                                .HasColumnName("DiscountPrice");
+
+                            b1.Property<decimal>("Price")
+                                .HasColumnType("decimal(6,2)")
+                                .HasColumnName("Price");
+
+                            b1.Property<decimal>("PriceAdditional")
+                                .HasColumnType("decimal(6,2)")
+                                .HasColumnName("PriceAdditional");
+
+                            b1.HasKey("PriceTableTimeId");
+
+                            b1.ToTable("PriceTableTime");
+
+                            b1.WithOwner()
+                                .HasForeignKey("PriceTableTimeId");
+                        });
+
+                    b.OwnsOne("GestaoMotel.Domain.ValueObjects.Schedules", "Schedule", b1 =>
+                        {
+                            b1.Property<Guid>("PriceTableTimeId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<string>("MaximumUsageTime")
+                                .IsRequired()
+                                .HasColumnType("varchar(11)")
+                                .HasColumnName("MaximumUsageTime");
+
+                            b1.Property<string>("MinimumUsageTime")
+                                .IsRequired()
+                                .HasColumnType("varchar(11)")
+                                .HasColumnName("MinimumUsageTime");
+
+                            b1.Property<TimeOnly>("TimeForAdditionalCalculation")
+                                .HasColumnType("time");
+
+                            b1.HasKey("PriceTableTimeId");
+
+                            b1.ToTable("PriceTableTime");
+
+                            b1.WithOwner()
+                                .HasForeignKey("PriceTableTimeId");
+                        });
+
+                    b.Navigation("Price")
+                        .IsRequired();
+
+                    b.Navigation("PriceTable");
+
+                    b.Navigation("Schedule")
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -269,6 +609,11 @@ namespace GestaoMotel.Infra.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("GestaoMotel.Domain.Entities.PriceTable", b =>
+                {
+                    b.Navigation("PriceTableTimes");
                 });
 #pragma warning restore 612, 618
         }

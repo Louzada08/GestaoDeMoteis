@@ -1,0 +1,9 @@
+<form [formGroup]="form" (ngSubmit)="submit()">
+    <label>Email</label>
+    <input formControlName="email" type="email" />
+    <label>Senha</label>
+    <input formControlName="password" type="password" />
+    <button type="submit">Entrar</button>
+    <div *ngIf="error" class="error">{{ error }}</div>
+    <p>Ainda não tem conta? <a routerLink="/register">Cadastre-se</a></p>
+  </form>

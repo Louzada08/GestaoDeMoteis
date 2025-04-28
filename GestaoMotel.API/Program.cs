@@ -1,6 +1,7 @@
 using GestaoMotel.API.Configuration;
 using GestaoMotel.Infra.IoC.ServicesInjector;
 using Microsoft.OpenApi.Models;
+using System.Net.NetworkInformation;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,12 +12,15 @@ builder.Services.AddControllers();
 
 builder.Services.AddIdentityInject(builder.Configuration);
 builder.Services.AddJwtConfiguration(builder.Configuration);
-builder.Services.AddServicesInjectors();
-
+builder.Services.AddMediatorInjector();
 builder.Services.AddMediatR(cfg =>
 {
     cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
+    //cfg.RegisterServicesFromAssembly(typeof(Ping).Assembly);
 });
+builder.Services.AddServicesInjectors();
+builder.Services.AddDbInjector();
+builder.Services.AddAutoMapperInjector();
 
 #region Configure CORS
 builder.Services.AddCors(options =>

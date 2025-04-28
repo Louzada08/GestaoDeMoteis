@@ -1,20 +1,19 @@
 ﻿using FluentValidation.Results;
-using Backoffice.Core.Validation;
+using GestaoMotel.Domain.Validation;
 
-namespace Backoffice.Core.Messages
+namespace Backoffice.Core.Messages;
+
+public abstract class QueryHandler
 {
-    public abstract class QueryHandler
+    protected ValidationResultBag ValidationResult;
+
+    protected QueryHandler()
     {
-        protected ValidationResultBag ValidationResult;
+        ValidationResult = new ValidationResultBag();
+    }
 
-        protected QueryHandler()
-        {
-            ValidationResult = new ValidationResultBag();
-        }
-
-        protected void AddError(string message)
-        {
-            ValidationResult.Errors.Add(new ValidationFailure(string.Empty, message));
-        }
+    protected void AddError(string message)
+    {
+        ValidationResult.Errors.Add(new ValidationFailure(string.Empty, message));
     }
 }

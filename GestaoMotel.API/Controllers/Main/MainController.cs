@@ -1,4 +1,5 @@
-﻿using GestaoMotel.Domain.Validation;
+﻿using AutoMapper;
+using GestaoMotel.Domain.Validation;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -9,11 +10,13 @@ namespace GestaoMotel.API.Controllers.Main
     public class MainController : Controller
     {
         protected ICollection<string> _errors = new List<string>();
-        protected IMediator _mediator;
+        protected readonly IMediator _mediator;
+        protected readonly IMapper _mapper;
 
-        public MainController(IMediator mediator)
+        public MainController(IMediator mediator, IMapper mapper)
         {
             _mediator = mediator;
+            _mapper = mapper;
         }
 
         protected ActionResult CustomResponse(object result = null)

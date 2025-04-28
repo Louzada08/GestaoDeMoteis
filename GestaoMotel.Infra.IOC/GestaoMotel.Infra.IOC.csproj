@@ -14,6 +14,7 @@
 	<ItemGroup>
     <ProjectReference Include="..\GestaoMotel.Aplicacao\GestaoMotel.Application.csproj" />
     <ProjectReference Include="..\GestaoMotel.Infra\GestaoMotel.Infra.csproj" />
+    <ProjectReference Include="..\GestaoMotel.Mapping\GestaoMotel.Mapping.csproj" />
   </ItemGroup>
 
 </Project>

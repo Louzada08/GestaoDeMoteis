@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace GestaoMotel.Infra.IoC.ServicesInjector;
 
-public static class AddIdentityInjectServices
+public static class IdentityInjectServices
 {
     public static IServiceCollection AddIdentityInject(this IServiceCollection services, IConfiguration configuration)
     {

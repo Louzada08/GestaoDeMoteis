@@ -2,7 +2,7 @@
 
 namespace GestaoMotel.Domain.Interfaces.Repositories;
 
-public interface IBaseRepository<TEntity> where TEntity : class
+public interface IBaseRepository<TEntity> : IDisposable where TEntity : class
 {
     IUnitOfWork UnitOfWork { get; }
     TEntity Add(TEntity entity);
