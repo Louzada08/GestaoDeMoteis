@@ -1,0 +1,895 @@
+    public class OrdemServicoMovto
+	{
+		// Tabela de Preço - Descrição
+        private static string _tipousoDesc;
+        public string Tabela_Preco_Descricao
+        {
+            get {  
+                    // Monta descrição do tipo de uso e preço da tabela que está sendo calculada
+                    TimeSpan _minutos = new TimeSpan(_QtdHsAdicional.Hour, _QtdHsAdicional.Minute, 0);
+                    string _tipousoDesc = "";
+                    switch (_TipoPeriodo)
+                    {
+                        case 0:
+                            _tipousoDesc = "{5} {0}{1}";
+                            _tipousoDesc += "por {2}hora(s) + {3} cada {4}min.";
+                            break;
+                        case 1:
+                            _tipousoDesc = "{5} {0}{1}";
+                            _tipousoDesc += "por {2}h + {3} cada {4}min.";
+                            break;
+                        case 2:
+                            _tipousoDesc = "{5} {0}{1}";
+                            _tipousoDesc += "por {2}hora(s) + {3} cada 60{4}min.";
+                            break;
+                    }
+                    _tipousoDesc = (String.Format(_tipousoDesc, String.Format("{0:C}", _permanenciaVlr), "#", _permanenciaHs.Hour, String.Format("{0:C}", _VlrHsAdicional), _minutos.TotalMinutes, _NomeRegra)).ToString();
+                    return _tipousoDesc;
+                // FIM: Monta descrição do tipo de uso e preço da tabela que está sendo calculada
+                }
+        }
+
+        private static DateTime _dtHsSaida;
+        public DateTime DtHsSaida
+        { 
+            get  { return _dtHsSaida;  }
+            set { _dtHsSaida = ((value.Year <= 2001) ? DateTime.Now : value); } 
+        }
+
+		private static DateTime _dtHsEntrada;
+		public DateTime DtHsEntrada
+		{
+			get { return _dtHsEntrada; } 
+			set { _dtHsEntrada = ((value.Year <= 2001) ? _dtHsEntrada : value); }
+		}
+
+        private static int _TipoPeriodo;
+		public int TipoPeriodo 
+		{
+			get { return _TipoPeriodo; } 
+			set { _TipoPeriodo = ((value == null) ? _TipoPeriodo : value); }		
+		}
+
+		public static string _NomeRegra { get; private set; }
+
+        private static int _TbCatID;
+		public int TbCatID 
+		{
+			get { return _TbCatID; } 
+			set { _TbCatID = ((value == null) ? _TbCatID : value); }		
+		}
+		
+		private static decimal _uso;
+        public decimal Uso
+        {
+            get { return _uso; }
+            set { _uso = value; }
+        }
+
+        private static decimal _consumo;
+        public decimal Consumo
+        {
+            get { return _consumo; }
+            set { _consumo = value; }
+        }
+        private static decimal _totalOs;
+        public decimal TotalOs
+        {
+            get
+            {
+                _totalOs = this.Uso + this.Consumo + this.VlrIncidente - this.Cortesia;
+                return _totalOs; 
+            }
+        }
+        private static decimal _apagar;
+        public decimal Apagar
+        {
+            get { _apagar = _totalOs + this.Acrescimo - (this.Deposito + this.Desconto); return _apagar; }
+        }
+       
+		private static decimal _vlrIncidente;
+		public Int64 _OSID { get; set; }
+        public decimal VlrIncidente
+        {
+            set { _vlrIncidente = value; }
+			get { 
+				try
+		        	{
+						DataAccessObject dao = Settings.GetDataAccessObject(((Databases)HttpContext.Current.Application["Databases"])["BDLOVEIN"]);
+		        		dao.OpenConnection();
+		        		string mSql = "SELECT * FROM VwTotalIncidenteX_OS WHERE FD_OSID_INCDTE = {0}";
+						mSql = String.Format(mSql, _OSID);
+		        		DataSet ds = dao.RunSql(mSql);
+						_vlrIncidente = 0;
+						
+						foreach (DataRow Row in ds.Tables[0].Rows)
+		        		{
+							if(((string)Row["DEB_CRE"] == "D") && (string)Row["VALOR_PERCENTUAL"] == "%")
+							{
+                                _vlrIncidente += ((this.Uso * (decimal)Row["VALOR"]) / 100) * -1;
+		            		}
+							if(((string)Row["DEB_CRE"] == "C") && (string)Row["VALOR_PERCENTUAL"] == "%")
+							{
+                                _vlrIncidente += ((this.Uso * (decimal)Row["VALOR"]) / 100);
+		            		}
+							if(((string)Row["DEB_CRE"] == "C") && (string)Row["VALOR_PERCENTUAL"] == "V")
+							{
+								_vlrIncidente += (decimal)Row["TotalIncidente"];
+		            		}
+						}
+						
+						dao.CloseConnection();
+					}	
+	                catch (Exception ex)
+	                {
+						string _erro = "";
+	                   _erro = ex.Message;
+	                }				
+				
+				return _vlrIncidente; }
+        }
+
+		private static decimal _deposito;
+        public decimal Deposito
+        {
+            get { return _deposito; }
+            set { _deposito = value; }
+        }
+
+		private static decimal _desconto;
+        public decimal Desconto
+        {
+            get { return _desconto; }
+        }
+        private static decimal _acrescimo;
+        public decimal Acrescimo
+        {
+            get { return _acrescimo; }
+        }
+		private static decimal _cortesia;
+        public decimal Cortesia
+        {
+            get { return _cortesia; }
+			set { _cortesia = value; }
+        }
+
+		private static decimal _permanenciaVlr;
+        public  decimal PermanenciaVlr
+        {
+            get { return _permanenciaVlr; }
+            set { _permanenciaVlr = value; }
+        }
+        private static decimal _pernoiteVlr;
+        public  decimal PernoiteVlr
+        {
+            get { return _pernoiteVlr; }
+            set { _pernoiteVlr = value; }
+        }	
+        private static decimal _diariaVlr;
+        public  decimal DiariaVlr
+        {
+            get { return _diariaVlr; }
+            set { _diariaVlr = value; }
+        }	
+		
+        public  static int _pernoite           { get; set; }
+		private static DateTime _toleranciaHs   { get; set; }
+        private static Decimal _toleranciaVlr   { get; set; }
+		private static TimeSpan _periodoMinMax  { get; set; }
+        private static DateTime _permanenciaHs  { get; set; }
+        private static DateTime _QtdHsAdicional { get; set; }
+        private static Decimal _VlrHsAdicional  { get; set; }
+        private static Decimal _minutExtraVlr   { get; set; }
+        private static TimeSpan _preHorasIni    { get; set; }
+        private static TimeSpan _preHorasFin    { get; set; }
+        private static DateTime _perHorasFin    { get; set; }
+        // Pega somente as Horas da Tabela Preço, é do Tempo de Uso da suite
+        private static string mtempoHs                  { get; set; }
+        private static string mtempoHsTabPreco          { get; set; }
+        private static TimeSpan mHsTabelaPerm           { get; set; }
+        private static int mMtTabelaPerm                { get; set; }
+        private static int mQtdHsEmMinutos              { get; set; }
+        private static TimeSpan mQtdHsDiferenca         { get; set; }
+		private static TimeSpan mHorasAtual				{ get; set; }
+        private static double mQtdHs                    { get; set; }
+        private static Decimal mVlrUso                  { get; set; }
+        private static bool _PeridoFixo                 { get; set; }
+        private static Boolean mSaiForeach              { get; set; }
+        private static Boolean mSaiWhile                { get; set; }      
+        private static Boolean mEntrouApartirHsPernoite { get; set; }
+        private static TimeSpan tempoUso                { get; set; }
+        private static string mHorasDe                  { get; set; }
+        private static string mHorasAte                 { get; set; }
+        private static DateTime mDtHsPeriodoFixo_Ini    { get; set; }
+        private static DateTime mDtHsPeriodoFixo_Fin    { get; set; }
+
+        // Construtores
+        public OrdemServicoMovto()
+        {
+            _tipousoDesc 	= "";
+            _totalOs 		= 0;
+            _vlrIncidente 	= 0;
+			_deposito 		= 0;
+			_cortesia 		= 0;
+			_apagar			= 0;
+			SetNomeRegra("PADRÃO");
+			SetTipoPeriodo(_TipoPeriodo);
+			SetTbCategoria(_TbCatID);
+        }
+        // Destrutor
+        ~OrdemServicoMovto()
+        {
+            _tipousoDesc 	= null;
+        	mtempoHs                = null;
+        	mtempoHsTabPreco        = null;
+        	mHorasDe               	= null;
+         	mHorasAte              	= null;
+		}
+        // Seta data de saida/entrada do cliente
+        public OrdemServicoMovto(DateTime _dtHsEntrada, DateTime _dtHsSaida)
+        {
+            SetDataDeSaida(_dtHsSaida);
+            SetDataDeEntrada(_dtHsEntrada);
+        }
+        // Fim - Construtores
+	
+        // Metodos
+        public static void SetNomeRegra(string nomeRegra)
+        {
+            _NomeRegra = nomeRegra;
+        }
+		
+		public void SetDataDeSaida(DateTime dtHsSaidaValue)
+        {
+            DtHsSaida = dtHsSaidaValue;
+        }
+        public void SetDataDeEntrada(DateTime dtHsEntValue)
+        {
+            DtHsEntrada = dtHsEntValue;
+        }
+        public void SetTipoPeriodo(int tipoPeriodoValue)
+        {
+            TipoPeriodo = tipoPeriodoValue;
+        }
+        public void SetTbCategoria(int tbCatIDValue)
+        {
+            TbCatID = tbCatIDValue;
+        }
+
+        // Calculos referentes OS
+        public static decimal RecebeDesconto(decimal fdesconto)
+        {
+            _desconto = fdesconto;
+			return _desconto;
+        }
+        public static decimal RecebeAcrescimo(decimal facrescimo)
+        {
+            _acrescimo = facrescimo;
+			return _acrescimo;
+        }
+       // SETA (atualiza) DEPOSITO %
+       public void SetDeposito(decimal fdeposito)
+        {
+            _deposito = fdeposito;
+        }
+
+        // SETA (atualiza) INCIDENTE %
+        public void SetIncidente(decimal fincidente)
+        {
+			_vlrIncidente = fincidente;
+        }
+
+        public static decimal CalculaCS(decimal fconsumo)
+        {
+            _consumo += fconsumo;
+         //   _apagar = CalculaTotalOS();
+            return _consumo;
+        }
+        // CALCULA TOTAL DO USO (ALUGUEL DA SUITE)
+        public static decimal CalculaUSO(decimal fuso, decimal fconsumo)
+        {
+			CalculaTotalOS(fuso, fconsumo);
+            return _uso;
+        }
+        // CACULA TOTAL OS
+        public static decimal CalculaTotalOS(decimal fuso, decimal fconsumo)
+        {
+			_uso = fuso;
+			_consumo = fconsumo;
+			_totalOs = (_uso + _consumo + _vlrIncidente);
+            CalculaAPagar();
+            return _totalOs;
+        }
+        // CALCULA TOTAL A PAGAR
+        public static decimal CalculaAPagar()
+        {
+            _apagar = (_totalOs + _acrescimo) - (_desconto + _deposito);
+            return _apagar;
+        }
+		
+        // Calcula tempo de permanencia, uso, aluguel 
+        public static decimal LeValorPermanencia(int fTbCatID, DateTime fDtHsEntrada, DateTime? fDtHsSaida, int fTipoPeriodo)
+        {
+            // Recebe DATA e HORAS que o cliente entrou
+            _dtHsEntrada = fDtHsEntrada;
+			_TipoPeriodo = fTipoPeriodo;
+			_TbCatID = fTbCatID;
+			
+            DataAccessObject dao = Settings.GetDataAccessObject(((Databases)HttpContext.Current.Application["Databases"])["BDLOVEIN"]);
+            dao.OpenConnection();
+
+           // string mSql = "SELECT * FROM TB_PRECO WHERE PRC_TABELA_ID = " + fTbPrecoID.ToString() + ";";
+
+            COMPONENTS.Data.ParameterCollection Params = new COMPONENTS.Data.ParameterCollection();
+            Params.Add("@entdate", new System.Data.SqlClient.SqlParameter("@entdate", _dtHsEntrada));
+            Params.Add("@cat", new System.Data.SqlClient.SqlParameter("@cat", _TbCatID));
+			Params.Add("@tipoperiodo", new System.Data.SqlClient.SqlParameter("@tipoperiodo", _TipoPeriodo));
+
+			DataSet ds = new DataSet();
+            dao.RunSP("USP_TABELA_PRECO", Params, ds);
+			
+            _toleranciaHs = DateTime.Now;
+            _toleranciaVlr = 0;
+			_periodoMinMax = new TimeSpan(0,0,0,0);
+			_permanenciaHs = DateTime.Now;
+            _permanenciaVlr = 0; _pernoiteVlr = 0; _diariaVlr = 0;
+            _QtdHsAdicional = DateTime.Now;
+            _VlrHsAdicional = 0; mHorasAtual = new TimeSpan (0,0,0);
+            _preHorasIni = new TimeSpan(0, 0, 0);
+            _preHorasFin = new TimeSpan(0, 0, 0); _perHorasFin = DateTime.Now;
+            _diariaVlr = 0;
+            _uso = 0;
+            mQtdHsEmMinutos = 0;
+            mQtdHs = 0;
+            mVlrUso = 0;
+            mSaiForeach = false;
+            mSaiWhile = false;
+            mEntrouApartirHsPernoite = false;
+
+            do
+            {
+                foreach (DataRow Row in ds.Tables[0].Rows)
+                {
+                    _perHorasFin = 			(DateTime)Row["PER_HORAS_FIN"];
+                    _toleranciaHs = 		(DateTime)Row["PER_HSTOLERANCIA"];
+                    _PeridoFixo = 			 (Boolean)Row["PER_TIPO_PERNOITE"];
+					SetNomeRegra((string)Row["PER_NOME_REGRA"]);
+                   // _TipoPeriodo = 	  Convert.ToInt16(Row["PER_TIPO_PERIODO"]);
+                    _toleranciaVlr = 0;
+                    _pernoiteVlr = 			 (decimal)Row["PER_VALOR_PERNOITE"];
+                    _diariaVlr = 			 (decimal)Row["PER_VALOR_DIARIA"];
+                    _periodoMinMax = TimeSpan.Parse((String)Row["PRE_PERIODO_MINIMO"]);
+                    _preHorasIni = new TimeSpan(Convert.ToDateTime(Row["PRE_HORAS_INI"]).Hour, Convert.ToDateTime(Row["PRE_HORAS_INI"]).Minute, Convert.ToDateTime(Row["PRE_HORAS_INI"]).Second);
+                    _preHorasFin = new TimeSpan(Convert.ToDateTime(Row["PRE_HORAS_FIN"]).Hour, Convert.ToDateTime(Row["PRE_HORAS_FIN"]).Minute, Convert.ToDateTime(Row["PRE_HORAS_FIN"]).Second);
+                    switch (Convert.ToDateTime(Row["FD_QTDHS_PER_PROMOCAO"]).Hour)
+                    {
+                    	case 0: 
+		                    _permanenciaHs = 		(DateTime)Row["PRE_QTDHORAS_PERIODO"];
+		                    _permanenciaVlr = 		 (decimal)Row["PRE_VALOR_PERIODO"];
+		                    _QtdHsAdicional = 		(DateTime)Row["PRE_QTDHORAS_ADICIONAL"];
+		                    _VlrHsAdicional = 	 	 (decimal)Row["PRE_VALOR_ADICIONAL"];
+							break;
+		                default: 
+		                    _permanenciaHs = 		(DateTime)Row["FD_QTDHS_PER_PROMOCAO"];
+		                    _permanenciaVlr = 		 (decimal)Row["FD_VALOR_PER_PROMOCAO"];
+		                    _QtdHsAdicional = 		(DateTime)Row["FD_QTDHS_ADICIONAL_PROMOCAO"];
+		                    _VlrHsAdicional = 	 	 (decimal)Row["FD_VALOR_ADICIONAL_PROMOCAO"];
+							break;
+					}
+					
+					if (mSaiWhile) 
+                    {
+                        mSaiWhile = false; mSaiForeach = false;
+                        fDtHsEntrada = mDtHsPeriodoFixo_Fin;
+                        _pernoiteVlr = mVlrUso;
+                    }
+                    if (TimeSpan.Compare(_preHorasIni, _preHorasFin) > -1)
+                    {
+                        TimeSpan _aux = new TimeSpan(1, 0, 0, 0);
+                        _preHorasFin = _preHorasFin.Add(_aux);
+                    }
+
+                    // Calcula tempo (DIAS, HS, MIN) de uso com base na Data e Horas de Entrada e Saída
+                    // Recebe DATA que o cliente entrou e HORAS INICIAL e FINAL, limite até onde deve ser calculado adicional quando o período é do TIPO FIXO
+                    // Este limite é igual a HORA INICIAL do pernoite na tabela PREÇO
+                    mDtHsPeriodoFixo_Ini = new DateTime(_dtHsEntrada.Year, _dtHsEntrada.Month, _dtHsEntrada.Day, _preHorasIni.Hours, _preHorasIni.Minutes, _preHorasIni.Seconds);
+                    mDtHsPeriodoFixo_Fin = new DateTime(_dtHsEntrada.Year, _dtHsEntrada.Month, _dtHsEntrada.Day, _preHorasFin.Hours, _preHorasFin.Minutes, _preHorasFin.Seconds);
+                    if ((_dtHsEntrada.Day == mDtHsPeriodoFixo_Ini.Day) && (DateTime.Compare(_dtHsSaida, mDtHsPeriodoFixo_Ini)) == -1)
+                    {
+                        mDtHsPeriodoFixo_Ini = mDtHsPeriodoFixo_Ini.AddDays(-1);      
+                    }
+                    if (DateTime.Compare(mDtHsPeriodoFixo_Ini, mDtHsPeriodoFixo_Fin) > -1)
+                    {
+                        mDtHsPeriodoFixo_Fin = mDtHsPeriodoFixo_Fin.AddDays(1);
+                    }
+
+                    mHorasAtual = new TimeSpan(_dtHsSaida.Hour, _dtHsSaida.Minute, _dtHsSaida.Second);
+                    tempoUso = new TimeSpan(_dtHsSaida.Ticks - _dtHsEntrada.Ticks);
+
+                    try
+                    {
+                        // Primeiro da Tolerancia = "HHMMSS"
+                        mHorasDe = _toleranciaHs.Hour.ToString("D3") + _toleranciaHs.Minute.ToString("D2") + _toleranciaHs.Second.ToString("D2");
+                        Int32 vlrInteiro = (Int32)tempoUso.TotalHours;
+                        mtempoHs = string.Format(vlrInteiro.ToString("D3"), "999") + tempoUso.Minutes.ToString("D2") + tempoUso.Seconds.ToString("D2");
+
+                        // CompareTo(data_str) retorna os seguintes valores
+                        // -1 valor menor que o comparado
+                        //  0 valor igual
+                        //  1 valor maior que o comparado
+                        // Calcula Tolerancia
+                        // FIXO= começa dentro de um período de horas ou LIVRE=começa a qualquer hora do dia 
+                        // Inicio switch: Verifica qual tipo de Período 
+
+                        switch (_PeridoFixo)
+                        {
+                            // -- PERÍODO LIVRE ----------------------------------- I N I C I O -------------------------------------------------------------                 
+                            case false: // PERÍODO LIVRE
+                                // Inicio switch (mtempoHs.CompareTo(mHorasDe)) - Tolerancia ou Período Minimo
+                                switch (mtempoHs.CompareTo(mHorasDe))
+                                {
+                                    case -1: // mTempoHs < mHorasDe
+                                    case 0: // mTempoHs = mHorasDe
+                                        //mVlrUso = _toleranciaVlr;
+										mVlrUso = _permanenciaVlr;
+                                        mSaiForeach = true;
+                                        break;
+                                }
+                                //  fim switch (mtempoHs.CompareTo(mHorasDe)) - Tolerancia ou Período Minimo
+                                if (mSaiForeach) break;
+
+                                mHorasDe = _permanenciaHs.Hour.ToString("D3") + _permanenciaHs.Minute.ToString("D2") + _permanenciaHs.Second.ToString("D2");
+                                mHsTabelaPerm = new TimeSpan(_permanenciaHs.Hour, _permanenciaHs.Minute, 0);
+
+                                // Inicio switch: Tipo Periodo (Permanencia, Pernoite ou Diaria)
+                                switch (_TipoPeriodo)
+                                {
+                                    case 0: // PERÍODO ( Permanencia )
+                                        if (Regra_PeridoLivre_Normal()) break;
+                                        break;
+                                    case 1: // Período ( PERNOITE )
+                                        if (Regra_PeridoLivre_Pernoite()) break;
+                                        break;
+                                    case 2: // PERÍODO ( DIÁRIA ) 
+                                        int mQtdDias = (Int32)tempoUso.Days;
+                                        mQtdDias += 1;
+                                        mVlrUso = mVlrUso + (_permanenciaVlr * mQtdDias);
+                                        mSaiForeach = true;
+                                        break;
+                                }
+                                break;
+                            // Fim switch: Tipo Periodo (Permanencia, Pernoite ou Diaria
+
+                            // -- PERÍODO FIXO ----------------------------------- I N I C I O -------------------------------------------------------------                 
+                            case true: // PERÍODO FIXO
+
+                                // Inicio switch (mtempoHs.CompareTo(mHorasDe)) - Tolerancia
+                                switch (mtempoHs.CompareTo(mHorasDe))
+                                {
+                                    case -1: // mTempoHs < mHorasDe
+                                    case 0:  // mTempoHs = mHorasDe
+                                        //mVlrUso = _toleranciaVlr;
+										mVlrUso = _permanenciaVlr;
+                                        mSaiForeach = true;
+                                        break;
+                                }
+                                //  fim switch (mtempoHs.CompareTo(mHorasDe)) - Tolerancia ou Período Minimo
+                                if (mSaiForeach) break;
+
+                                mHorasDe = _permanenciaHs.Hour.ToString("D3") + _permanenciaHs.Minute.ToString("D2") + _permanenciaHs.Second.ToString("D2");
+                                mHsTabelaPerm = new TimeSpan(_permanenciaHs.Hour, _permanenciaHs.Minute, 0);
+                                mMtTabelaPerm = Convert.ToInt32((_permanenciaHs.Minute + _permanenciaHs.Second).ToString("D2"));
+                                // Inicio switch: Tipo Periodo (Normal, Pernoite ou Diaria)
+                                switch (_TipoPeriodo)
+                                {
+                                    case 0: // PERÍODO ( NORMAL )
+                                        if (Regra_PeridoFixo_Normal()) break;
+                                        break;
+                                    case 1: // Período ( PERNOITE )
+                                        if (Regra_PeridoFixo_Pernoite()) break;
+                                        break;
+                                    case 2: // PERÍODO ( DIÁRIA ) 
+                                        int mQtdDias = (Int32)tempoUso.Days;
+                                        mQtdDias += 1;
+                                        mVlrUso = mVlrUso + (_permanenciaVlr * mQtdDias);
+                                        mSaiForeach = true;
+                                        break;
+                                }
+                                break;
+                            // Fim switch: Tipo Periodo (Normal, Pernoite ou Diaria
+                        }
+                        // fim switch: Verifica qual tipo de Pernoite
+
+                    }
+                    catch { } // fim try
+
+                    if (mSaiForeach) { break; }
+
+                } // fim foreach
+            } while (mSaiWhile);
+
+            dao.CloseConnection();
+            CalculaUSO(mVlrUso, _consumo);
+            return _uso;
+
+       } // fim LeValorPermanencias
+
+        //---FIXO----------------INICIO-------------------Funcao PERIODO FIXO NORMAL ( PERMANENCIA )-------------------
+        // Ultima manutenção: 15/01/2017 03:13hs - Anderson
+        public static bool Regra_PeridoFixo_Normal() 
+        {
+			if((mHorasAtual >= _preHorasIni) && (mHorasAtual <= _preHorasFin))
+			{		
+		        // Inicio switch Verifica Tempo: Periodo (Normal)
+                switch (mtempoHs.CompareTo(mHorasDe))
+                {
+                    case -1: // mTempoHs < mHorasDe
+                    case 0:  // mTempoHs = mHorasDe
+                        mVlrUso = _permanenciaVlr;
+                        mSaiForeach = true;
+                        break;
+                    case 1:
+                       // if (DateTime.Compare(_dtHsEntrada, mDtHsPeriodoFixo_Ini) > -1 && DateTime.Compare(_dtHsEntrada, mDtHsPeriodoFixo_Fin) < 1)
+                       // {
+                            if (_periodoMinMax.Hours == 0 && _periodoMinMax.Minutes == 0) break;
+                           // Calcula Hora Adicional
+                            mHorasDe = _periodoMinMax.Hours.ToString("D3") + _periodoMinMax.Minutes.ToString("D2") + _periodoMinMax.Seconds.ToString("D2");
+                            switch (TimeSpan.Compare(tempoUso, _periodoMinMax))
+                            // switch (mtempoHs.CompareTo(mHorasDe))
+                            {  
+                                case -1:
+                                case 0:
+                                case 1:
+                                    // Calcula Hora Adicional
+                                    mQtdHsEmMinutos = _QtdHsAdicional.Hour * 60 + _QtdHsAdicional.Minute; 
+                                   // mHorasDe = _periodoMinMax.Hours.ToString("D3") + _periodoMinMax.Minutes.ToString("D2") + _periodoMinMax.Seconds.ToString("D2");
+                                    mQtdHsDiferenca = tempoUso - mHsTabelaPerm;
+                                    mQtdHs = Math.Truncate(mQtdHsDiferenca.TotalMinutes / mQtdHsEmMinutos);
+
+                                    if (mQtdHs == 0)
+                                    {
+                                        mQtdHs = 1;
+                                    }
+                                    else
+                                    {
+                                        if (Math.Abs(tempoUso.Minutes - (Int32)(_toleranciaHs.Minute)) > 0)
+                                        {
+                                            mQtdHs += 1;
+                                        }
+                                    }
+                            
+                                    mVlrUso = (_permanenciaVlr + (_VlrHsAdicional * (decimal)mQtdHs));
+                                    mSaiForeach = (OrdemServicoMovto._pernoite==0)?true:false;
+                                    break;
+                            }
+                            break;
+            	}
+            	return true;
+			}
+			return true;
+		}
+        //-----FIXO-------------FIM------------------Funcao PERIODO FIXO NORMAL---------------------
+
+        /*-----FIXO-------------INICIO---------------Funcao PERIODO FIXO PERNOITE------------------- 
+         * No período fixo não há necessidade de testar a QTD DE HORAS PERIODO (nome do campo na tabela: PRE_QTDHORAS_PERIODO),
+         * mas é obrigatório criar 2 regras de pernoite fixo: uma para o período da perneite fixa e outra para fora do período
+         * da pernoite para se calcular o adicional 
+                // Calcula Hora Adicional pelo período da Tabela de Preços
+                mHorasDe = _preHorasIni.Hour.ToString("D3") + _preHorasIni.Minute.ToString("D2") + _preHorasIni.Second.ToString("D2");
+                mHorasAte = _preHorasFin.Hour.ToString("D3") + _preHorasFin.Minute.ToString("D2") + _preHorasFin.Second.ToString("D2");
+                Int32 vlrInteiro = (Int32)DateTime.Now.TimeOfDay.TotalHours;
+                mtempoHsTabPreco = string.Format(vlrInteiro.ToString("D3"), "999") + DateTime.Now.TimeOfDay.Minutes.ToString("D2") + DateTime.Now.TimeOfDay.Seconds.ToString("D2");
+         */
+        public static bool Regra_PeridoFixo_Pernoite()
+        {	// entrou antes ou durante o pernoite e está saído dentro do período
+            if ((DateTime.Compare(_dtHsSaida, mDtHsPeriodoFixo_Ini) > -1 && TimeSpan.Compare(_dtHsSaida.TimeOfDay, mDtHsPeriodoFixo_Fin.TimeOfDay) < 1)) 
+            //if ((DateTime.Compare(m_dtHsSaida, mDtHsPeriodoFixo_Ini) > -1 && DateTime.Compare(m_dtHsSaida, mDtHsPeriodoFixo_Fin) < 1)) // entrou antes ou durante o pernoite e está saído dentro do período
+                {
+                if (TimeSpan.Compare(_dtHsEntrada.TimeOfDay, mDtHsPeriodoFixo_Ini.TimeOfDay) == -1) // Se DtHsEntrada < DataHoras de Inicio do período Fixo
+                {
+                    // Inicio switch Verifica Tempo: QUANTIDADE DE HORAS DO PERIODO NORMAL COM TEMPO DE PERMANENCIA ATÉ A DATA E HORA DE SAÍDA
+                    tempoUso = new TimeSpan(Math.Abs(mDtHsPeriodoFixo_Ini.TimeOfDay.Ticks - _dtHsEntrada.TimeOfDay.Ticks));
+                    // Primeiro da Tolerancia = "HHMMSS"
+                    mHorasDe = _permanenciaHs.Hour.ToString("D3") + _permanenciaHs.Minute.ToString("D2") + _permanenciaHs.Second.ToString("D2");
+                    Int32 vlrInteiro = (Int32)tempoUso.TotalHours;
+                    mtempoHs = string.Format(vlrInteiro.ToString("D3"), "999") + tempoUso.Minutes.ToString("D2") + tempoUso.Seconds.ToString("D2");
+                }
+                else
+                {
+                    tempoUso = new TimeSpan(Math.Abs(_dtHsSaida.Ticks - _dtHsEntrada.Ticks));
+                    /* Primeiro da Tolerancia = "HHMMSS"
+                    mHorasDe = _permanenciaHs.Hour.ToString("D3") + _permanenciaHs.Minute.ToString("D2") + _permanenciaHs.Second.ToString("D2");
+                    Int32 vlrInteiro = (Int32)tempoUso.TotalHours;
+                    mtempoHs = string.Format(vlrInteiro.ToString("D3"), "999") + tempoUso.Minutes.ToString("D2") + tempoUso.Seconds.ToString("D2"); */
+                    mVlrUso = _pernoiteVlr;
+                    mSaiForeach = true;
+                    return true;
+                }
+            }
+            else if (DateTime.Compare(_dtHsSaida, mDtHsPeriodoFixo_Ini) == -1) // entrou antes e saindo antes da pernoite
+            {
+                tempoUso = new TimeSpan(Math.Abs(_dtHsSaida.Ticks - _dtHsEntrada.Ticks));
+                mHorasDe = _permanenciaHs.Hour.ToString("D3") + _permanenciaHs.Minute.ToString("D2") + _permanenciaHs.Second.ToString("D2");
+                Int32 vlrInteiro = (Int32)tempoUso.TotalHours;
+                mtempoHs = string.Format(vlrInteiro.ToString("D3"), "999") + tempoUso.Minutes.ToString("D2") + tempoUso.Seconds.ToString("D2");
+                _pernoiteVlr = 0;
+            }
+            // Entrou antes do pernoite e saiu depois
+            // -1 valor menor que o comparado
+            //  0 valor igual
+            //  1 valor maior que o comparado
+            else if (DateTime.Compare(_dtHsSaida, mDtHsPeriodoFixo_Fin) == 1 && (DateTime.Compare(_dtHsEntrada, mDtHsPeriodoFixo_Ini) == -1))
+            {
+                tempoUso = new TimeSpan(Math.Abs(mDtHsPeriodoFixo_Ini.Ticks - _dtHsEntrada.Ticks));
+                tempoUso += new TimeSpan(Math.Abs(_dtHsSaida.Ticks - mDtHsPeriodoFixo_Fin.Ticks));
+                // Primeiro da Tolerancia = "HHMMSS"
+                mHorasDe = _permanenciaHs.Hour.ToString("D3") + _permanenciaHs.Minute.ToString("D2") + _permanenciaHs.Second.ToString("D2");
+                Int32 vlrInteiro = (Int32)tempoUso.TotalHours;
+                mtempoHs = string.Format(vlrInteiro.ToString("D3"), "999") + tempoUso.Minutes.ToString("D2") + tempoUso.Seconds.ToString("D2");
+
+                if (EntrouAntesSaiuDepoisDaPernoite())
+                {
+                 /*   tempoUso = new TimeSpan(Math.Abs(m_dtHsSaida.Ticks - mDtHsPeriodoFixo_Fin.Ticks));
+                    // Primeiro da Tolerancia = "HHMMSS"
+                    mHorasDe = _permanenciaHs.Hour.ToString("D3") + _permanenciaHs.Minute.ToString("D2") + _permanenciaHs.Second.ToString("D2");
+                    vlrInteiro = (Int32)tempoUso.TotalHours;
+                    mtempoHs = string.Format(vlrInteiro.ToString("D3"), "999") + tempoUso.Minutes.ToString("D2") + tempoUso.Seconds.ToString("D2");
+                  */
+                    if ((mVlrUso > 0) && _pernoiteVlr == 0)
+                    {
+                        mSaiWhile = true;
+                        return true;
+                    }
+                
+                    mSaiForeach = false;
+                    // _pernoiteVlr = 0;
+                }
+                else { return true; }
+            }
+            // Entrou no periodo do pernoite e saiu depois
+            // -1 valor menor que o comparado
+            //  0 valor igual
+            //  1 valor maior que o comparado
+            else if (DateTime.Compare(_dtHsSaida, mDtHsPeriodoFixo_Fin) == 1 && (DateTime.Compare(_dtHsEntrada, mDtHsPeriodoFixo_Ini) >= 0))
+            {
+                tempoUso = new TimeSpan(Math.Abs(mDtHsPeriodoFixo_Ini.Ticks - _dtHsEntrada.Ticks));
+                tempoUso += new TimeSpan(Math.Abs(_dtHsSaida.Ticks - mDtHsPeriodoFixo_Fin.Ticks));
+                // Primeiro da Tolerancia = "HHMMSS"
+                mHorasDe = _permanenciaHs.Hour.ToString("D3") + _permanenciaHs.Minute.ToString("D2") + _permanenciaHs.Second.ToString("D2");
+                Int32 vlrInteiro = (Int32)tempoUso.TotalHours;
+                mtempoHs = string.Format(vlrInteiro.ToString("D3"), "999") + tempoUso.Minutes.ToString("D2") + tempoUso.Seconds.ToString("D2");
+ 
+				/*    tempoUso = new TimeSpan(Math.Abs(m_dtHsSaida.Ticks - mDtHsPeriodoFixo_Fin.Ticks));
+                // Primeiro da Tolerancia = "HHMMSS"
+                mHorasDe = _permanenciaHs.Hour.ToString("D3") + _permanenciaHs.Minute.ToString("D2") + _permanenciaHs.Second.ToString("D2");
+                Int32 vlrInteiro = (Int32)tempoUso.TotalHours;
+                mtempoHs = string.Format(vlrInteiro.ToString("D3"), "999") + tempoUso.Minutes.ToString("D2") + tempoUso.Seconds.ToString("D2");
+              */  if ((mVlrUso > 0) && _pernoiteVlr == 0)
+                {
+                    mSaiWhile = true;
+                    return true;
+                }
+
+                mSaiForeach = false;
+                // _pernoiteVlr = 0;
+            }
+
+            switch (mtempoHs.CompareTo(mHorasDe))
+            {
+                case -1: // mTempoHs < mHorasDe
+                case 0:  // mTempoHs = mHorasDe
+                    mVlrUso += _permanenciaVlr + _pernoiteVlr;
+                    mSaiForeach = false; // anderson - aqui era verdadeiro
+                    break;
+                case 1:
+                    // Calcula Hora Adicional se Período Minimo for <= Tempo de Permanência
+                    if (_periodoMinMax.Hours == 0 && _periodoMinMax.Minutes == 0) break;
+                     
+                    switch ((DateTime.Compare(_dtHsSaida, mDtHsPeriodoFixo_Ini) > -1 && DateTime.Compare(_dtHsSaida, mDtHsPeriodoFixo_Fin) < 1))
+                    {
+						case true: // dentro do período
+                            mVlrUso = _permanenciaVlr + _pernoiteVlr;
+		                    mSaiForeach = true;
+                            if (mtempoHs.CompareTo(mHorasDe) <= 0) { mSaiForeach = true; break; }
+
+                            //if (mtempoHs.CompareTo(mHorasDe) <= 0) { mSaiForeach = false; }
+
+							// Calcula Hora Adicional
+                            mQtdHsEmMinutos = _QtdHsAdicional.Hour * 60 + _QtdHsAdicional.Minute;
+                           // mHorasDe = _periodoMinMax.Hours.ToString("D3") + _periodoMinMax.Minutes.ToString("D2") + _periodoMinMax.Seconds.ToString("D2");
+                            mQtdHsDiferenca = tempoUso - mHsTabelaPerm;
+                            mQtdHs = Math.Truncate(mQtdHsDiferenca.TotalMinutes / mQtdHsEmMinutos);
+
+                            if (mQtdHs == 0)
+                            {
+                                mQtdHs = 1;
+                            }
+                            else
+                            {
+                                if (Math.Abs(tempoUso.Minutes - (Int32)(_toleranciaHs.Minute)) > 0)
+                                {
+                                    mQtdHs += 1;
+                                }
+                            }
+
+                            mVlrUso = (_permanenciaVlr + (_VlrHsAdicional * (decimal)mQtdHs)) + _pernoiteVlr;
+                            mSaiForeach = true;
+                            break;
+                        case false:
+                            if (DateTime.Compare(_dtHsSaida, mDtHsPeriodoFixo_Ini) == -1)
+                            {
+                                mQtdHsEmMinutos = _QtdHsAdicional.Hour * 60 + _QtdHsAdicional.Minute;
+                                tempoUso = new TimeSpan(Math.Abs(_dtHsSaida.Ticks - _dtHsEntrada.Ticks));
+                               // mHorasDe = _periodoMinMax.Hours.ToString("D3") + _periodoMinMax.Minutes.ToString("D2") + _periodoMinMax.Seconds.ToString("D2");
+                                mQtdHsDiferenca = tempoUso - mHsTabelaPerm;
+                                mQtdHs = Math.Truncate(mQtdHsDiferenca.TotalMinutes / mQtdHsEmMinutos);
+                                if (mQtdHs == 0)
+                                {
+                                    mQtdHs = 1;
+                                }
+                                else
+                                {
+                                    if (Math.Abs(tempoUso.Minutes - (Int32)(_toleranciaHs.Minute)) > 0)
+                                    {
+                                        mQtdHs += 1;
+                                    }
+                                }
+
+                                mVlrUso = (_permanenciaVlr + (_VlrHsAdicional * (decimal)mQtdHs)) + _pernoiteVlr;
+                                mSaiForeach = true;
+                                break;
+                            
+                            }
+                           
+                            if (DateTime.Compare(_dtHsSaida, mDtHsPeriodoFixo_Fin) == 1)
+                            {
+                                mQtdHsEmMinutos = _QtdHsAdicional.Hour * 60 + _QtdHsAdicional.Minute;
+                                tempoUso = new TimeSpan(Math.Abs(_dtHsEntrada.Ticks - _dtHsSaida.Ticks));
+                               // mHorasDe = _periodoMinMax.Hours.ToString("D3") + _periodoMinMax.Minutes.ToString("D2") + _periodoMinMax.Seconds.ToString("D2");
+                                mQtdHsDiferenca = tempoUso - mHsTabelaPerm;
+                                mQtdHs = Math.Truncate(mQtdHsDiferenca.TotalMinutes / mQtdHsEmMinutos);
+                                if (mQtdHs == 0)
+                                {
+                                    mQtdHs = 1;
+                                }
+                                else
+                                {
+                                    if (Math.Abs(tempoUso.Minutes - (Int32)(_toleranciaHs.Minute)) > 0)
+                                    {
+                                        mQtdHs += 1;
+                                    }
+                                }
+
+                                mVlrUso = (_permanenciaVlr + (_VlrHsAdicional * (decimal)mQtdHs)) + _pernoiteVlr;
+                                mSaiForeach = true;
+                                break;
+                            }
+                            break;
+                    }
+                    break;
+            	}
+            return true;
+        }
+
+        public static bool EntrouAntesSaiuDepoisDaPernoite() 
+        {
+            switch (mtempoHs.CompareTo(mHorasDe))
+            {
+                case -1: // mTempoHs < mHorasDe
+                case 0:  // mTempoHs = mHorasDe
+                    mVlrUso += _permanenciaVlr; //+ _pernoiteVlr;
+                    _pernoiteVlr = 0;
+                    mSaiForeach = true;
+                    break;
+                case 1:
+                    if (_periodoMinMax.Hours == 0 && _periodoMinMax.Minutes == 0)
+                    {
+                        mSaiForeach = false; break;
+                    }
+                    break;
+            }
+            return mSaiForeach;
+        }
+//-FIM PERIODO FIXO--------------------------------------F I M-----------------------------------------------------
+
+//----LIVRE------------INICIO----------------Funcao PERIODO LIVRE NORMAL----------------------
+        public static bool Regra_PeridoLivre_Normal()
+        {
+            // Inicio switch Verifica Tempo: QUANTIDADE DE HORAS DO PERIODO NORMAL COM TEMPO DE PERMANENCIA ATÉ A DATA E HORA DE SAÍDA
+            switch (mtempoHs.CompareTo(mHorasDe))
+            {
+                case -1: // mTempoHs < mHorasDe
+                case 0:  // mTempoHs = mHorasDe
+                    mVlrUso = _permanenciaVlr;
+                    mSaiForeach = true;
+                    break;
+                case 1:
+                    // Calcula Hora Adicional se Período Minimo for <= Tempo de Permanência
+                    if (_periodoMinMax.Hours == 0 && _periodoMinMax.Minutes == 0) break;
+                    mHorasDe = _periodoMinMax.Hours.ToString("D3") + _periodoMinMax.Minutes.ToString("D2") + _periodoMinMax.Seconds.ToString("D2");
+
+                    switch (TimeSpan.Compare(tempoUso, _periodoMinMax))
+                   // switch (mtempoHs.CompareTo(mHorasDe))
+                    {
+                        case -1: // mTempoHs < mHorasDe
+                        case 0:  // mTempoHs = mHorasDe
+                            // Calcula Hora Adicional
+                            mQtdHsEmMinutos = _QtdHsAdicional.Hour * 60 + _QtdHsAdicional.Minute; 
+                           // mHorasDe = _periodoMinMax.Hours.ToString("D3") + _periodoMinMax.Minutes.ToString("D2") + _periodoMinMax.Seconds.ToString("D2");
+                            mQtdHsDiferenca = tempoUso - mHsTabelaPerm;
+                            mQtdHs = Math.Truncate(mQtdHsDiferenca.TotalMinutes / mQtdHsEmMinutos);
+
+                            if (mQtdHs == 0)
+                            {
+                                mQtdHs = 1;
+                            }
+                            else
+                            {
+                                if (Math.Abs(tempoUso.Minutes - (Int32)(_toleranciaHs.Minute)) > 0)
+                                {
+                                    mQtdHs += 1;
+                                }
+                            }
+                            
+                            mVlrUso = (_permanenciaVlr + (_VlrHsAdicional * (decimal)mQtdHs));
+                            mSaiForeach = true;
+                            break;
+                        case 1:
+                            break;
+                    }
+                    break;
+            }
+            return true;
+        }
+        //-----LIVRE------------FIM-------------------Funcao PERIODO LIVRE NORMAL---------------------
+
+        //-----LIVRE------------INICIO---------------Funcao PERIODO LIVRE PERNOITE--------------------
+        public static bool Regra_PeridoLivre_Pernoite()
+        {
+            // Inicio switch Verifica Tempo: Periodo (Pernoite)
+            switch (mtempoHs.CompareTo(mHorasDe))
+            {
+                case -1: // mTempoHs < mHorasDe
+                case 0:  // mTempoHs = mHorasDe
+                    mVlrUso = _permanenciaVlr;
+                    mSaiForeach = true;
+                    break;
+                case 1:
+                    // Calcula Hora Adicional
+                    mHorasDe = _periodoMinMax.Hours.ToString("D3") + _periodoMinMax.Minutes.ToString("D2") + _periodoMinMax.Seconds.ToString("D2");
+                    switch (TimeSpan.Compare(tempoUso, _periodoMinMax))
+                    // switch (mtempoHs.CompareTo(mHorasDe))
+                    {
+                        case -1: // mTempoHs < mHorasDe
+                        case 0:  // mTempoHs = mHorasDe
+                            // Calcula Hora Adicional
+                            mQtdHsEmMinutos = _QtdHsAdicional.Hour * 60 + _QtdHsAdicional.Minute;
+                            //mQtdHsDiferenca = new TimeSpan(tempoUso.Hours - mHsTabelaPerm.Hours, Math.Abs(tempoUso.Minutes - mHsTabelaPerm.Minutes), tempoUso.Seconds);
+                            mQtdHsDiferenca = tempoUso - mHsTabelaPerm;
+                            mQtdHs = Math.Truncate(mQtdHsDiferenca.TotalMinutes / mQtdHsEmMinutos);
+
+                            if (mQtdHs == 0)
+                            {
+                                mQtdHs = 1;
+                            }
+                            else
+                            {
+                                if (Math.Abs(tempoUso.Minutes - (Int32)(_toleranciaHs.Minute)) > 0)
+                                {
+                                    mQtdHs += 1;
+                                }
+                            }
+
+                            mVlrUso = (_permanenciaVlr + (_VlrHsAdicional * (decimal)mQtdHs));
+                            mSaiForeach = true;
+                            break;
+                        case 1:
+                            break;
+                    }
+                    break;
+            }
+            return true;
+        }
+        //---LIVRE----------------FIM------------------Funcao PERIODO LIVRE PERNOITE--------------------
+
+    } // fim class OrdemServicoMovto

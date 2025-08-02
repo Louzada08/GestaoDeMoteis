@@ -12,6 +12,7 @@ public static class DbInjector
         services.AddScoped<ICategoryRepository, CategoryRepository>();
         services.AddScoped<IPriceTableRepository, PriceTableRepository>();
         services.AddScoped<IPriceTableTimeRepository, PriceTableTimeRepository>();
+        services.AddScoped<IServiceCommandRepository, ServiceCommandRepository>();
 
         return services;
     }

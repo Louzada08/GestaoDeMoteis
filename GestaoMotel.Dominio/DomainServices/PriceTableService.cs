@@ -1,5 +1,4 @@
 ﻿using AspNetCore.IQueryable.Extensions;
-using GestaoMotel.Domain.Dtos;
 using GestaoMotel.Domain.Entities;
 using GestaoMotel.Domain.Filters;
 using GestaoMotel.Domain.Interfaces.Repositories;
@@ -29,11 +28,12 @@ public class PriceTableService : IPriceTableService
         throw new NotImplementedException();
     }
 
-    public async Task<List<PriceTable>> GetAll(PriceTableFilter filter, bool @readonly = false)
+    public async Task<List<PriceTable>> GetAll(ServiceCommand comanda)
     {
+        
         var filterQuery = await _repository.QueryableFor(f =>
-                (filter.CategoryId.Equals(f.CategoryId)))
-                .Apply(filter)
+                (comanda.Suite.CategoryId.Equals(f.CategoryId)))
+            //    .Apply(filter)
                 .AsNoTracking()
                 .Include(p => p.PriceTableTimes.OrderBy(pt => pt.RuleOrder))
                 .OrderBy(o => o.TypePrice)

@@ -10,6 +10,7 @@ public class ServiceCommand : BaseEntity, IAggregateRoot
     public Guid? UserId { get; set; }
     public Guid? UserInspectionId { get; set; }
     public Guid? CleaningUserId { get; set; }
+    public Suite Suite { get; set; }
     
     public ServiceCommand() { }
 }

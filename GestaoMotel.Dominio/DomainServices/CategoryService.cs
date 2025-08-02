@@ -28,7 +28,7 @@ public class CategoryService : ICategoryService
         throw new NotImplementedException();
     }
 
-    public Task<IList<Category>> GetAll(SuiteFilter suiteFilter, bool @readonly = false)
+    public Task<IList<Category>> GetAll(CategoryFilter categoryFilter, bool @readonly = false)
     {
         throw new NotImplementedException();
     }

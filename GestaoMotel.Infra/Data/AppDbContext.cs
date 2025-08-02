@@ -5,14 +5,12 @@ using GestaoMotel.Domain.Interfaces.Base;
 using GestaoMotel.Domain.Interfaces.Repositories;
 using GestaoMotel.Domain.Mediator.Interfaces;
 using GestaoMotel.Domain.Messages;
-using GestaoMotel.Domain.ValueObjects;
 using GestaoMotel.Infra.Extensions;
 using GestaoMotel.Infra.Mapping;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
-using System;
 using System.Data.Common;
 
 namespace GestaoMotel.Infra.Data
