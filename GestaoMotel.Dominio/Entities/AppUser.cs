@@ -1,10 +1,13 @@
-﻿namespace GestaoMotel.Domain.Entities;
+﻿using GestaoMotel.Domain.Messages.Communication;
+
+namespace GestaoMotel.Domain.Entities;
 
 public class AppUserResponseLogin
 {
     public string AccessToken { get; set; } = string.Empty;
     public double ExpiresIn { get; set; }
     public AppUserToken UserToken { get; set; }
+    public ResponseResult ResponseResult { get; set; }
 }
 
 public class AppUserToken

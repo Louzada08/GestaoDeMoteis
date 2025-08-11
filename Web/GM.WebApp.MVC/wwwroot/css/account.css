@@ -1,0 +1,55 @@
+.account-container {
+    background-image: url('../images/account-bg.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: repeat-y;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 2rem 0;
+}
+
+.account-box {
+    background-color: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    max-width: 500px;
+    width: 100%;
+    opacity: .9;
+}
+
+/* Estilos para a nova tela de login */
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f5f5f5;
+}
+
+.login-box {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+}
+
+.login-box h2 {
+    color: #333;
+    font-size: 1.5rem;
+}
+
+.login-box .btn-warning {
+    background-color: #ff9800;
+    border-color: #ff9800;
+}
+
+.login-box .btn-warning:hover {
+    background-color: #f57c00;
+    border-color: #f57c00;
+}

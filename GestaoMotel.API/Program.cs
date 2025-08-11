@@ -4,19 +4,21 @@ using Microsoft.OpenApi.Models;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
-
 // Add services to the container.
 
 builder.Services.AddControllers();
 
 builder.Services.AddIdentityInject(builder.Configuration);
 builder.Services.AddJwtConfiguration(builder.Configuration);
-builder.Services.AddServicesInjectors();
-
+builder.Services.AddMediatorInjector();
 builder.Services.AddMediatR(cfg =>
 {
     cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
+    //cfg.RegisterServicesFromAssembly(typeof(Ping).Assembly);
 });
+builder.Services.AddServicesInjectors();
+builder.Services.AddDbInjector();
+builder.Services.AddAutoMapperInjector();
 
 #region Configure CORS
 builder.Services.AddCors(options =>
@@ -27,6 +29,7 @@ builder.Services.AddCors(options =>
     );
 });
 #endregion
+
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -63,6 +66,11 @@ builder.Services.AddSwaggerGen(c =>
 
 });
 
+#region Backgroud Service
+//builder.Services.AddHostedService<CheckLengthOfStayBackgroundService>();
+//builder.Services.AddHostedService<CheckLengthOfStayHostedService>();
+#endregion
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -79,6 +87,9 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+//app.UseMiddleware<CheckLengthOfStayMiddleware>();
+//app.UseCustomLengthAndStayMiddleware();
 
 app.MapControllers();
 

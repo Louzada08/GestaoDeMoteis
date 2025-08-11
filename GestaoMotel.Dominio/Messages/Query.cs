@@ -1,9 +1,8 @@
 ﻿using FluentValidation.Results;
+using GestaoMotel.Domain.Validation;
 using MediatR;
-using Newtonsoft.Json;
-using Backoffice.Core.Validation;
 
-namespace Backoffice.Core.Messages
+namespace GestaoMotel.Core.Messages
 {
     public abstract class Query : IRequest<ValidationResultBag>
     {

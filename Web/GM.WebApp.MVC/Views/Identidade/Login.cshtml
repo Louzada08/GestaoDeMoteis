@@ -1,0 +1,56 @@
+@model GM.WebApp.MVC.Models.UserLogin
+
+@{
+    ViewData["Title"] = "Login de usuário";
+    Layout = "~/Views/Shared/_AccountLayout.cshtml";
+}
+
+<div class="login-container">
+    <div class="login-box">
+        <div class="row g-0">
+            <div class="col-md-5 d-flex align-items-center justify-content-center p-4 bg-light">
+                <div class="text-center">
+                    <img src="/images/logo-motel.svg" alt="Logo" class="img-fluid mb-3" style="max-width: 150px;" />
+                    <div class="mt-3">
+                        <a href="#" class="text-decoration-none d-block mb-1">Guia Digital</a>
+                        <a href="#" class="text-decoration-none d-block mb-1">Help Desk</a>
+                        <a href="#" class="text-decoration-none d-block">Registrar Licença</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-7 p-4">
+                <h2 class="border-bottom pb-2 mb-4">Seja Bem-vindo</h2>
+                
+                @await Component.InvokeAsync(nameof(SummaryViewComponent))
+                
+                <form asp-route-returnurl="@ViewData["ReturnUrl"]" method="post">
+@*                     <div asp-validation-summary="ModelOnly" class="text-danger"></div> *@                    <div class="mb-3">
+                        <label asp-for="Email" class="form-label">Login:</label>
+                        <input asp-for="Email" class="form-control" />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Password" class="form-label">Senha:</label>
+                        <input asp-for="Password" class="form-control" type="password" />
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-warning text-white">Entrar</button>
+                    </div>
+                </form>
+                
+                <div class="mt-4 text-center">
+                    <img src="/images/logo_lz.svg" alt="Sistemas" class="img-fluid" style="max-width: 200px;" />
+                    <div class="d-flex justify-content-between mt-3">
+                        <small>Amor pelo que faz</small>
+                        <small>(63) 98430-9740</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
