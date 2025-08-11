@@ -21,7 +21,7 @@ public static class WebAppConfig
         //}
         //else
         //{
-            
+
         //}
 
         app.UseExceptionHandler("/erro/500");
@@ -43,13 +43,13 @@ public static class WebAppConfig
             SupportedUICultures = supportedCultures
         });
 
-        app.UseMiddleware<ExceptionMiddleware>();
+        //app.UseMiddleware<ExceptionMiddleware>();
 
         app.UseEndpoints(endpoints =>
         {
             endpoints.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Catalogo}/{action=Index}/{id?}");
+                pattern: "{controller=Painel}/{action=Index}/{id?}");
         });
     }
 }

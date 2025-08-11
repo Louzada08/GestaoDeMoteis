@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 80">
+  <style>
+    .text { font-family: monospace; font-weight: bold; font-size: 32px; }
+    .icon { fill: #000; }
+  </style>
+  <g>
+    <!-- Ícone de sistema -->
+    <path class="icon" d="M40,20 C30,20 20,30 20,40 C20,50 30,60 40,60 L50,40 L40,20 Z" />
+    <path class="icon" d="M45,20 L55,40 L45,60 C55,60 65,50 65,40 C65,30 55,20 45,20 Z" />
+    
+    <!-- Texto "sistemas" -->
+    <text x="80" y="50" class="text">s i s t e m a s</text>
+  </g>
+</svg>

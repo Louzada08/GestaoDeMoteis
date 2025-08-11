@@ -1,6 +1,5 @@
 using GestaoMotel.API.Configuration;
 using GestaoMotel.Infra.IoC.ServicesInjector;
-using GestaoMotel.Infra.WorkServices;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
 

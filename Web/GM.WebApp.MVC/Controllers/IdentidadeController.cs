@@ -58,10 +58,16 @@ namespace NSE.WebApp.MVC.Controllers
             var resposta = await _autenticacaoService.Login(usuarioLogin);
 
             if (ResponsePossuiErros(resposta.ResponseResult)) return View(usuarioLogin);
+            //if (ResponsePossuiErros(resposta.ResponseResult))
+            //{
+            //    TempData["Erros"] =
+            //       ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage)).ToList();
+            //    return View(usuarioLogin);
+            //}
 
             await RealizarLogin(resposta);
 
-            if (string.IsNullOrEmpty(returnUrl)) return RedirectToAction("Index", "Catalogo");
+            if (string.IsNullOrEmpty(returnUrl)) return RedirectToAction("Index", "Painel");
 
             return LocalRedirect(returnUrl);
         }

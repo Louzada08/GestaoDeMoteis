@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <style>
+    .heart-left { fill: #ff4d4d; }
+    .heart-right { fill: #4d79ff; }
+    .couple { fill: white; }
+  </style>
+  <g>
+    <!-- Coração esquerdo (vermelho) -->
+    <path class="heart-left" d="M100,30 C80,10 50,10 30,30 C10,50 10,80 30,100 L100,170 L100,30 Z" />
+    
+    <!-- Coração direito (azul) -->
+    <path class="heart-right" d="M100,30 C120,10 150,10 170,30 C190,50 190,80 170,100 L100,170 L100,30 Z" />
+    
+    <!-- Silhueta feminina -->
+    <path class="couple" d="M80,120 C75,110 70,100 70,90 C70,80 75,70 80,65 C85,60 85,55 85,50 C85,45 80,40 75,40 C70,40 65,45 65,50 C65,55 70,60 70,65 C65,70 60,80 60,90 C60,100 65,110 70,120 L80,120 Z" />
+    
+    <!-- Silhueta masculina -->
+    <path class="couple" d="M120,120 C125,110 130,100 130,90 C130,80 125,70 120,65 C115,60 115,55 115,50 C115,45 120,40 125,40 C130,40 135,45 135,50 C135,55 130,60 130,65 C135,70 140,80 140,90 C140,100 135,110 130,120 L120,120 Z" />
+    
+    <!-- Pequenos corações acima -->
+    <path class="heart-left" d="M60,30 C55,25 45,25 40,30 C35,35 35,45 40,50 L60,70 L60,30 Z" />
+    <path class="heart-right" d="M140,30 C145,25 155,25 160,30 C165,35 165,45 160,50 L140,70 L140,30 Z" />
+  </g>
+</svg>
